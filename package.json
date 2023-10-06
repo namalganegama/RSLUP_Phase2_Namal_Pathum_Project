@@ -1,0 +1,23 @@
+{
+  "name": "ordering_application",
+  "version": "1.0.0",
+  "description": "Phase 2 - Activity 1.2",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/namalganegama/RSLUP_Phase2_Namal_Pathum_Project.git"
+  },
+  "author": "Namal Pathum",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/namalganegama/RSLUP_Phase2_Namal_Pathum_Project/issues"
+  },
+  "homepage": "https://github.com/namalganegama/RSLUP_Phase2_Namal_Pathum_Project#readme",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
