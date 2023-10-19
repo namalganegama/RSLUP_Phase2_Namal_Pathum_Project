@@ -5,7 +5,14 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "node server.js",
+    "lint": "eslint .",
+    "precommit": "npm run lint"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run precommit"
+    }
   },
   "repository": {
     "type": "git",
@@ -19,5 +26,10 @@
   "homepage": "https://github.com/namalganegama/RSLUP_Phase2_Namal_Pathum_Project#readme",
   "dependencies": {
     "express": "^4.18.2"
-  }
+  },
+  "devDependencies": {
+    "eslint": "^8.51.0",
+    "husky": "^8.0.3"
+  },
+  "keywords": []
 }
