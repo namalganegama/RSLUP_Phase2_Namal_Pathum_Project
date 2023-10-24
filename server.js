@@ -1,25 +1,29 @@
-console.log('Hello world')
+const dotenv = require('dotenv');
+dotenv.config({path: './config.env'});
 
-//console.log(global);
+process.on('uncaughtException', (err) => {
+    console.log(err.name, err.message);
+    console.log('Uncaught Exception occured! Shutting down...');
+    process.exit(1);
+ })
 
-const os = require('os')
-const path = require('path')
-const { add, subtract, multiply, divide } = require('./math')
+const app = require('./app');
 
-console.log(add(2, 3))
-console.log(subtract(2, 3))
-console.log(multiply(2, 3))
-console.log(divide(2, 3))
 
-// console.log(os.type())
-// console.log(os.version())
-// console.log(os.homedir())
+const port = process.env.PORT || 3000;
 
-// console.log(__dirname)
-// console.log(__filename)
+const server = app.listen(port, () => {
+    console.log(`Server is running on http://localhost:${port}`);
+   // console.log('server has started ');
+})
 
-// console.log(path.dirname(__filename))
-// console.log(path.basename(__filename))
-// console.log(path.extname(__filename))
+process.on('unhandledRejection', (err) => {
+   console.log(err.name, err.message);
+   console.log('Unhandled rejection occured! Shutting down...');
 
-// console.log(path.parse(__filename))
+   server.close(() => {
+    process.exit(1);
+   })
+})
+
+
