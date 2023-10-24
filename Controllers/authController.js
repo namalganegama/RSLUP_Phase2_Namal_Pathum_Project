@@ -1,6 +1,7 @@
 const users = require('./../Models/userModel');
 const asyncErrorHandler = require('./../Utils/asyncErrorHandler');
 const jwt = require('jsonwebtoken');
+const jwt = require('jsonwebtoken');
 
 const signToken = id => {
     return jwt.sign({ id }, process.env.SECRET_STR, {
@@ -82,6 +83,42 @@ exports.getAllUsers = asyncErrorHandler(async (req, res, next) => {
     }
   });
   
+  exports.protect = asyncErrorHandler(async (req, res, next) => {
+    //1. Read the token & check if it exist
+    const testToken = req.headers.authorization;
+    let token;
+    if(testToken && testToken.startsWith('Bearer')){
+         token = testToken.split(' ')[1];
+    }
+    if(!token){
+        next(new CustomError('You are not loged in - unauthorized!', 401))
+    }
+    
+    //2. Validate the token
+    const decodedToken = await util.promisify(jwt.verify)(token, process.env.SECRET_STR);
+
+    //3. If the user exists
+    const user = await User.findById(decodedToken.id);
+
+    if(!user){
+        const error = new CustomError('The user with given token does not exist', 401);
+        next(error);
+    }
+
+    req.user = user;
+    next();
+})
+
+exports.restrict = (...role) => {
+    return (req, res, next) => {
+        if(!role.includes(req.user.role)){
+            const error = new CustomError('You do not have permission to perform this action', 403);
+            next(error);
+        }
+        next();
+    }
+}
+
 
 
 

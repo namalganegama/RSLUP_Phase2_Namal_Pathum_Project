@@ -7,13 +7,16 @@ router.route('/signup').post(authController.signup);
 router.route('/login').post(authController.login);
 
 
-router.route('/all').get( authController.getAllUsers);
+router.route('/all').get(authController.protect, authController.getAllUsers);
 
 router.route('/:userId')
-.get( authController.getUser)
-.put( authController.updateUser)
-.delete(authController.deleteUser)
+.get(authController.protect, authController.getUser)
+.put(authController.protect, authController.updateUser)
 
-
+.delete(
+    authController.protect, 
+    authController.restrict('admin', 'developer'), 
+    authController.deleteUser
+    )
 
 module.exports = router;
