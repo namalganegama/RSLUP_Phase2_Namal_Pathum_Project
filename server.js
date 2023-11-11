@@ -1,5 +1,6 @@
 const dotenv = require('dotenv');
 dotenv.config({path: './config.env'});
+const mongoose = require('mongoose');
 
 process.on('uncaughtException', (err) => {
     console.log(err.name, err.message);
@@ -8,6 +9,13 @@ process.on('uncaughtException', (err) => {
  })
 
 const app = require('./app');
+
+mongoose.connect(process.env.CONN_STR, {
+   useNewUrlParser: true
+}).then((conn) => {
+   //console.log(conn);
+   console.log('DB Connection Successful');
+})
 
 
 const port = process.env.PORT || 3000;
