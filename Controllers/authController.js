@@ -200,3 +200,37 @@ exports.forgotPassword = asyncErrorHandler(async (req, res, next) => {
       return next(new CustomError('There was an error sending password reset email. Please try again later', 500));
   }
 });
+
+exports.resetPassword = asyncErrorHandler(async (req, res, next) => {
+  //1. If the user exists with the given token & token has not expired
+  const token = crypto.createHash('sha256').update(req.params.token).digest('hex');
+  const user = await User.findOne({passwordResetToken: token, passwordResetTokenExpires: {$gt: Date.now()}});
+
+  if(!user){
+      const error = new CustomError('Token is ivalid or has expired!', 400);
+      next(error);
+  }
+
+  //2. Resetting the user password
+  user.password = req.body.password;
+  user.confirmPassword = req.body.confirmPassword;
+  user.passwordResetToken = undefined;
+  user.passwordResetTokenExpires = undefined;
+  user.passwordChangedAt = Date.now();
+
+  if(req.body.password == req.body.confirmPassword){
+      user.save();
+  
+  //3. Login the user
+  const loginToken = signToken(user._id);
+
+  res.status(200).json({
+      status: 'success',
+      token: loginToken
+  })
+  }else{
+  
+  const error = new CustomError('Password and confirmPassword deos not match!', 400);
+      next(error);
+  } 
+});
