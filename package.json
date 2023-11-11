@@ -25,9 +25,13 @@
   },
   "homepage": "https://github.com/namalganegama/RSLUP_Phase2_Namal_Pathum_Project#readme",
   "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
-    "jsonwebtoken": "^9.0.2"
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.0.0",
+    "validator": "^13.11.0"
   },
   "devDependencies": {
     "eslint": "^8.51.0",
