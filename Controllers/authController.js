@@ -3,6 +3,7 @@ const User = require('./../Models/userModel');
 const asyncErrorHandler = require('./../Utils/asyncErrorHandler');
 const jwt = require('jsonwebtoken');
 const util = require('util');
+const sendEmail = require('./../Utils/email');
 const crypto = require('crypto');
 
 
@@ -161,3 +162,75 @@ exports.restrict = (...role) => {
 }
 
 
+exports.forgotPassword = asyncErrorHandler(async (req, res, next) => {
+  
+  const user = await User.findOne({email: req.body.email});
+  if(!user){
+      const error = new CustomError('We could not find the user with given email', 404);
+      next(error);
+  }
+
+ 
+  const resetToken = user.createResetPasswordToken();
+
+  await user.save({validateBeforeSave: false});
+
+
+  const resetUrl = `${req.protocol}://${req.get('host')}/api/v1/users/resetPassword/${resetToken}`;
+
+  const message = `We have received a password reset request. Please use the below link to reset your password\n\n${resetUrl}\n\nThis reset password link will be valid only for 10 minutes.`
+
+  try{
+  await sendEmail({
+      email: user.email,
+      subject: 'Password change request received',
+      message: message
+      });
+
+      res.status(200).json({
+          status:'success',
+          message: 'Password reset link send to the user email'
+      });
+
+  }catch(err){ 
+      user.passwordResetToken = undefined;
+      user.passwordResetTokenExpires = undefined
+      user.save({validateBeforeSave: false});
+
+      return next(new CustomError('There was an error sending password reset email. Please try again later', 500));
+  }
+});
+
+exports.resetPassword = asyncErrorHandler(async (req, res, next) => {
+  //1. If the user exists with the given token & token has not expired
+  const token = crypto.createHash('sha256').update(req.params.token).digest('hex');
+  const user = await User.findOne({passwordResetToken: token, passwordResetTokenExpires: {$gt: Date.now()}});
+
+  if(!user){
+      const error = new CustomError('Token is ivalid or has expired!', 400);
+      next(error);
+  }
+
+  //2. Resetting the user password
+  user.password = req.body.password;
+  user.confirmPassword = req.body.confirmPassword;
+  user.passwordResetToken = undefined;
+  user.passwordResetTokenExpires = undefined;
+  user.passwordChangedAt = Date.now();
+
+  if(req.body.password == req.body.confirmPassword){
+      user.save();
+  
+  //3. Login the user
+  const loginToken = signToken(user._id);
+
+  res.status(200).json({
+      status: 'success',
+      token: loginToken
+  })
+  }else{
+  
+  const error = new CustomError('Password and confirmPassword deos not match!', 400);
+      next(error);
+  } 
+});
