@@ -1,6 +1,7 @@
 const express = require('express');
 const authRouter = require('./Routes/authRouter')
 const flightRouter = require('./Routes/flightRouter')
+const ticketRouter = require('./Routes/ticketRouter')
 const CustomError = require('./Utils/CustomError');
 const globalErrorHandler = require('./Controllers/errorController')
 const cors = require('cors');
@@ -18,6 +19,8 @@ app.use(cors(corsOptions));
 
 app.use('/api/v1/users', authRouter);
 app.use('/flight', flightRouter);
+app.use('/ticket', ticketRouter);
+
 app.all('*', (req, res, next) => {
 
     const err = new CustomError(`Can't find ${req.originalUrl} on the server!`, 404);
