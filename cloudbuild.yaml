@@ -1,7 +1,7 @@
 steps:
 #First Clone from Google Cloud Source Repository  
 - name: 'gcr.io/cloud-builders/git'
-  args: ['clone','https://source.developers.google.com/p/${_PROJECT}/r/${_REPO_NAME}']
+  args: ['clone','https://github.com/namalganegama/RSLUP_Phase2_Namal_Pathum_Project_API.git']
 
 #Build the image 
 - name: 'gcr.io/cloud-builders/docker'
@@ -24,14 +24,14 @@ steps:
   
 substitutions:
     #GCP Specific configuration. Please DON'T change anything
-    _PROJECT: learn-gcp-with-mahesh
+    _PROJECT: namalganegama
     _ZONE: asia-south1-a
     _GKE_CLUSTER: learn-gcp-with-mahesh-gke-cluster
     
     #Repository Specific configuration. DevOps can change this settings
     _DEPLOYMENTNAME: hello-world-service
     _CONTAINERNAME: hello-world-service    
-    _REPO_NAME: cicd-service
+    _REPO_NAME: RSLUP_Phase2_Namal_Pathum_Project_API
     
     # Developers ONLY change
     _VERSION: v1.0
